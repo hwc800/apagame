@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>客户端主页</title>
+    <style>
+        #list {
+    padding:2px;
+}
+#list dl {
+    /*float:left;*/
+    margin:auto;
+    overflow:hidden;
+    padding-bottom:1px;
+}
+#list dt {
+    background:#C3DFEA;
+    display:inline;
+    line-height:28px;
+    float:left;
+    margin:auto auto 5px auto;
+    width:98%;
+    *width:97.5%;
+    font-size:14px;
+    padding:5px 10px;
+    overflow:hidden;
+    text-align:center;
+    vertical-align:middle;
+}
+#list dd {
+    border-bottom:1px dashed #CCCCCC;
+    display:inline;
+    float:left;
+    height:25px;
+    line-height:200%;
+    margin-bottom:5px;
+    overflow:hidden;
+    text-align:left;
+    text-indent:10px;
+    vertical-align:middle;
+    width:30%;
+}
+
+
+#list dd A:link{
+    color:#444444;
+    TEXT-DECORATION:none;
+}
+#list dd A:visited {
+    COLOR:#178102;
+    TEXT-DECORATION:none;
+    text-decoration:underline;
+}
+    </style>
+</head>
+<body>
+<div id="list">
+<dl>
+        <dd><a href="{%url 'ind:top'%}">机器状态查询</a></dd>
+        <dd><a href="{%url 'ind:zhuye'%}">构建相关文件下载</a></dd>
+        <dd><a href="{%url 'app02:drawing'%}">构建节点耗时分支画图</a></dd>
+        <dd><a href="{%url 'app02:select'%}">版本号查询相关构建信息</a></dd>
+</dl>
+</div>
+</body>
+</html>

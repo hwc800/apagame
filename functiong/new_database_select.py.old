@@ -1,0 +1,18 @@
+import pymysql
+
+from functiong.db_functiong import select_f
+
+
+def select_new_database(version):
+    version = version.replace("\'", "")
+    version = version.replace("\"", "")
+    db = pymysql.connect("9.135.94.3", "root", "123456789", "version_num", port=3306, charset='utf8')
+    cursor = db.cursor()
+    sql = "select * from build_version where version=\"%s\";" % version
+    select_result = select_f(cursor=cursor, dbname="version_num", tablename="build_version", sql=sql)
+
+    db.close()
+
+    return select_result
+
+

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+.expa{ width:200px; height:200px; border:1px solid #F00;display:inline}
+.expb{ width:200px; height:200px; border:1px solid #00F;display:inline;margin-left:10px;}
+</style>
+</head>
+<body>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+</head>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+<link rel="stylesheet" href="https://www.canvasxpress.org/dist/canvasXpress.css" type="text/css"/>
+<script type="text/javascript" src="https://www.canvasxpress.org/dist/canvasXpress.min.js"></script>
+<script type="text/javascript" src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+<body>
+<div id="main" style="width:100%;height:200px;">
+    <div id="left" style="width:20%;height:200px;float:left ">
+        <input name="is_time" type="button" onclick="show1()" value="阶段耗时走势">
+        <input name="is_name" type="button" onclick="show2()" value="单次构建各阶段耗时比较">
+
+
+    </div>
+
+    <div id="right" style="width:70%;height:200px;float:right">
+        <div id="div1" style="display:none">
+            <a>time:</a>
+            <select name="time" id="time">
+                <option selected="selected"></option>
+                <option>recentday</option>
+                <option>recentweek</option>
+                <option>recentmonth</option>
+                <option>recentyear</option>
+            </select>
+            <a>data:</a>
+            <select name="data">
+                <option selected="selected"></option>
+                <option>duration</option>
+                <option>record</option>
+            </select>
+            <a>tag:</a>
+                <select name="tag" >
+                <option selected="selected"></option>
+                {% for i in tag %}
+                <option>{{ i }}</option>
+                {% endfor %}
+                </select>
+            <input type="button" id="dosubmit" value="确认"><br>
+        </div>
+        <div id="div2" style="display:none">
+        <a>流水线名:</a>
+            <select name="line_name" >
+            <option selected="selected"></option>
+            {% for i in linename %}
+            <option>{{ i }}</option>
+            {% endfor %}
+            </select>
+        <a>构建号:</a>
+        <input name="build_id" type="text" value="请输入内容" onfocus="javascript:if(this.value=='请输入内容')this.value='';">
+
+        <input type="button" id="twosubmit" value="确认"><br>
+        </div>
+    </div>
+</div>
+
+    <div id="myh" style="position:absolute; top:60px; left:10px; width:auto; height:400px;">
+    <canvas id="myChart" style="width:1800px; height:400px;"></canvas>
+    </div>
+</body>
+<script type="text/javascript">
+//显示与隐藏
+var bsh = true;
+function show1(){
+document.getElementById("div1").style.display="block";
+document.getElementById("div2").style.display="none";
+};
+function show2()
+{
+document.getElementById("div2").style.display="block";
+document.getElementById("div1").style.display="none";
+}
+
+
+function formatTime(number,format) {
+
+  var formateArr  = ['Y','M','D','h','m','s'];
+  var returnArr   = [];
+
+  var date = new Date(number * 1000);
+  returnArr.push(date.getFullYear());
+  returnArr.push(formatNumber(date.getMonth() + 1));
+  returnArr.push(formatNumber(date.getDate()));
+
+  returnArr.push(formatNumber(date.getHours()));
+  returnArr.push(formatNumber(date.getMinutes()));
+  returnArr.push(formatNumber(date.getSeconds()));
+
+  for (var i in returnArr)
+  {
+    format = format.replace(formateArr[i], returnArr[i]);
+  }
+  return format;
+}
+
+//数据转化
+function formatNumber(n) {
+  n = n.toString()
+  return n[1] ? n : '0' + n
+}
+//ajax
+function ajx(dat, url, isd){
+$.ajax({
+                url:url,
+                data:dat,
+                type:"get",
+                traditional:true,
+                dataType:"json",
+                headers:{'X-CSRFToken':'{{ csrf_token }}'},
+                success:function (data) {
+                    if(data.data=="no"){
+                    alert("未接收到数据，请确认提交")
+                    }else{
+                    var x = eval(data.x);
+                    var y = eval(data.y);
+                    var types = data.type;
+                    var xlable = data.xlable;
+                    var ylable = data.ylable;
+                    var title = data.title;
+
+                    if(isd!=false){
+                        var xs = [];
+                        for(var i = 0; i < x.length; i++){
+                            xs.push(formatTime(x[i],'Y/M/D-h:m:s'));//转换为日期：2017/03/03 03:03:03
+                        };
+                        x = xs;
+                    }
+                    dwring(x, y, xlable, ylable, title, types);
+                    }
+                }
+            })
+}
+//清理画布
+function clearCanvas(){
+    $('#myChart').remove();
+    $('#myh').append('<canvas id="myChart" style="width:1800px; height:400px;"></canvas>');
+    container=document.getElementById("myChart");
+    context=container.getContext("2d");
+}
+//画图
+function dwring(x, y, xlable, ylable, title, types){
+clearCanvas();
+var ctx = document.getElementById('myChart').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: ''+types,
+    data: {
+		//x
+        labels: x,
+        datasets: [{
+            label: ''+title,
+			//y
+            data: y,
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            pointBorderWidth: 0,
+            pointRadius: 1,
+            borderWidth: 1,
+            lineTension: 0
+        }]
+    },
+    options: {
+        scales: {
+            xAxes: [{
+                    LabelStyle:{Angle:90},
+                    scaleLabel: {
+                        display: true,
+                        labelString: ''+xlable
+                    },
+
+                }],
+            yAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: ''+ylable
+                    },
+                    ticks: {
+                        beginAtZero:true,
+                        major: {
+                                  fontStyle: 'bold',
+                                  fontColor: '#000000'
+                                }
+                    }
+            }]
+        }
+    }
+
+});
+
+}
+//点击事件
+$(function () {
+    $('#dosubmit').click(function () {
+        var time = $('#time').find("option:selected").val();
+        var data = $('select[name="data"]').find("option:selected").val();
+        var tag = $('select[name="tag"]').find("option:selected").val();
+        var type = "line";
+        //var type = $('select[name="line_name"]').find("option:selected").val();
+        var dat = {
+            "time": time,
+            "data": data,
+            "tag": tag,
+            "type": type,
+        }
+        var url = "{% url 'app02:mas' %}";
+        var isd = true;
+        ajx(dat, url, true);
+    })
+});
+//点击事件
+$(function () {
+    $('#twosubmit').click(function () {
+        var line_name = $('select[name="line_name"]').find("option:selected").val();
+        var build_id = $('input[name="build_id"]').val();
+        var type = "bar";
+        dat = {
+            "type": type,
+            "line_name": line_name,
+            "build_id": build_id,
+        }
+        var url = "{% url 'app02:twos' %}";
+        var isd = false;
+        ajx(dat, url, isd);
+    })
+});
+</script>
+</html>

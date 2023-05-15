@@ -1,0 +1,161 @@
+import ast
+import json
+import pymysql as mysql
+import re, time
+from django.http import JsonResponse, HttpResponse
+from django.shortcuts import render
+
+# Create your views here.
+from functiong.new_database_select import select_new_database
+
+
+def left_one(requests):
+    if requests.method == 'GET':
+        db = mysql.connect("9.135.94.3", "root", "123456789", "web", port=3306, charset='utf8')
+        cursor = db.cursor()
+        sql = f' SELECT DISTINCT linename FROM run_time_statistics;'
+        cursor.execute(sql)
+        linename = cursor.fetchall()
+        linename = list(linename)
+        for i in range(len(linename)):
+            linename[i] = list(linename[i])
+            linename[i] = linename[i][0]
+        sql = f' SELECT DISTINCT tag FROM run_time_statistics;'
+        cursor.execute(sql)
+        tag = cursor.fetchall()
+        tag = list(tag)
+        for i in range(len(tag)):
+            tag[i] = list(tag[i])
+            tag[i] = tag[i][0]
+        data = {
+            "linename": linename,
+            "tag": tag,
+        }
+        db.close()
+        return render(requests, 'webindex.html', data)
+
+
+def master(requests):
+    if requests.method == 'GET':
+        result = None
+        date = requests.GET.get("time")
+        tag = requests.GET.get("tag")
+        dat = requests.GET.get("data")
+        types = requests.GET.get("type")
+        xlable = "日期-时间"
+        ylable = "执行时间"
+        title = f"{tag}阶段执行时间走势图"
+        isday = None
+        now = time.time()
+        if date == "recentday":
+            isday = now - (60 * 60 * 12)
+        elif date == "recentweek":
+            isday = now - (60 * 60 * 12 * 7)
+        elif date == "recentmonth":
+            isday = now - (60 * 60 * 12 * 30)
+        elif date == "recentyear":
+            isday = now - (60 * 60 * 12 * 360)
+
+        if isday and dat and tag:
+            db = mysql.connect("9.135.94.3", "root", "123456789", "web", port=3306, charset='utf8')
+            cursor = db.cursor()
+            res = r"\D.*?"
+            tr = re.findall(res, tag)
+            sql = f'select * from run_time_statistics where tag={tag} and date>={isday};'
+            if tr:
+                sql = f'select * from run_time_statistics where tag="{tag}" and date>={isday};'
+            cursor.execute(sql)
+            try:
+                result = cursor.fetchall()
+            except:
+                print("fetchall失败")
+                result = None
+            db.close()
+            x, y = [], []
+            if dat == "duration":
+                for i in result:
+                    x.append(i[1])
+                    y.append(i[2])
+            elif dat == "record":
+                for i in result:
+                    x.append(i[1])
+                    y.append(i[-2])
+            data = {"x": json.dumps(x),
+                    "y": json.dumps(y),
+                    "type": types,
+                    "xlable": xlable,
+                    "ylable": ylable,
+                    "title": title,
+                    }
+            return JsonResponse(data)
+
+
+def two(requests):
+    if requests.method == 'GET':
+        line_name = requests.GET.get("line_name")
+        build_id = requests.GET.get("build_id")
+        type = requests.GET.get("type")
+        db = mysql.connect("9.135.94.3", "root", "123456789", "web", port=3306, charset='utf8')
+        cursor = db.cursor()
+        sql = f'select * from run_time_statistics where linename="{line_name}" and build_id={build_id};'
+        cursor.execute(sql)
+        linename = cursor.fetchall()
+        if linename:
+            x, y, tags = [], [], []
+            for i in linename:
+                if i[2]:
+                    x.append(i[1])
+                    y.append(i[2])
+                    tags.append(i[4])
+                data = {
+                "type": "bar",
+                "x": json.dumps(tags),
+                "y": json.dumps(y),
+                "title": "本次构建各阶段耗时比较",
+                "xlable": "阶段名",
+                "ylable": "耗时(s)",
+            }
+            return JsonResponse(data)
+        else:
+            data = {
+                "data": "no",
+            }
+            return JsonResponse(data)
+
+
+def select(requests):
+    return render(requests, "aclient_select.html")
+
+
+def version(requests):
+    if requests.method == "GET":
+        version = requests.GET.get("version")
+        versions = version.split(".")
+        data = {}
+        if not version or len(versions) != 4:
+            return JsonResponse({"data": "no"})
+
+        # 新数据查询
+        new_data = select_new_database(version)
+        if new_data:
+            pingtai = new_data["BuildClass"]
+            tag = new_data["tag"].split("+")
+            commit_id = new_data["CommitId"].split("_")
+            if pingtai in ["android_pak", "ios_pak"]:
+                select_app = select_new_database(new_data["appversion"])
+                tag = select_app["tag"].split("+")
+                commit_id = select_app["CommitId"].split("_")
+            data = new_data
+            pop_key = ["id", "tag", "CommitId", "third", "version", "TopThree", "TopTwo", "fourth", "appversion"]
+            for k in pop_key:
+                data.pop(k)
+            data["engine_branch"] = tag[0]
+            data["engine_commitid"] = commit_id[0]
+            data["client_commitid"] = commit_id[1]
+            data["content_commitid"] = commit_id[2]
+            data["client_branch"] = tag[1]
+            data["content_branch"] = tag[2]
+            data["ASANENABLE"] = "True" if data["ASANENABLE"] == "True" else "False"
+
+            return JsonResponse(data)
+        return JsonResponse({"data": "no"})

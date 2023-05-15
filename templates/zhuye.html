@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>客户端专用网页</title>
+    <style>
+#list {
+    padding:2px;
+}
+#list dl {
+    /*float:left;*/
+    margin:auto;
+    overflow:hidden;
+    padding-bottom:1px;
+}
+#list dt {
+    background:#C3DFEA;
+    display:inline;
+    line-height:28px;
+    float:left;
+    margin:auto auto 5px auto;
+    width:98%;
+    *width:97.5%;
+    font-size:14px;
+    padding:5px 10px;
+    overflow:hidden;
+    text-align:center;
+    vertical-align:middle;
+}
+#list dd {
+    border-bottom:1px dashed #CCCCCC;
+    display:inline;
+    float:left;
+    height:25px;
+    line-height:200%;
+    margin-bottom:5px;
+    overflow:hidden;
+    text-align:left;
+    text-indent:10px;
+    vertical-align:middle;
+    width:30%;
+}
+
+
+#list dd A:link{
+    color:#444444;
+    TEXT-DECORATION:none;
+}
+#list dd A:visited {
+    COLOR:#178102;
+    TEXT-DECORATION:none;
+    text-decoration:underline;
+}
+    </style>
+</head>
+<body bgcolor="blance">
+    <div align="center" >
+        <h2>文件列表</h2><br>
+        <p><a href="{%url 'ind:down'%}?name={{ e }}"><h3>..</h3></a></p><br>
+            <div id="list">
+                <dl>
+                    {% for e in fielname %}
+                        <dd>
+                            <a href="{%url 'ind:down'%}?name={{ e }}" style="width:30%">{{ e }}</a>
+                        </dd>
+                    {% endfor %}
+                </dl>
+            </div>
+    </div>
+</body>
+</html>

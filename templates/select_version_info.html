@@ -1,0 +1,137 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>版本查询</title>
+        <style>
+        #list {
+            padding:2px;
+        }
+        #list dl {
+            /*float:left;*/
+            margin:auto;
+            overflow:hidden;
+            padding-bottom:1px;
+        }
+        #list dt {
+            background:#C3DFEA;
+            display:inline;
+            line-height:28px;
+            float:left;
+            margin:auto auto 5px auto;
+            width:100%;
+            *width:100%;
+            font-size:14px;
+            padding:5px 10px;
+            overflow:hidden;
+            text-align:center;
+            vertical-align:middle;
+        }
+        #list dd {
+            border-bottom:1px dashed #CCCCCC;
+            display:inline;
+            float:left;
+            height:50px;
+            line-height:200%;
+            margin-bottom:5px;
+            text-align:left;
+            text-indent:10px;
+            vertical-align:middle;
+            width:40%;
+            overflow:auto;
+        }
+
+
+        #list dd A:link{
+            color:#444444;
+            TEXT-DECORATION:none;
+        }
+        #list dd A:visited {
+            COLOR:#178102;
+            TEXT-DECORATION:none;
+            text-decoration:underline;
+        }
+    </style>
+</head>
+
+<script type="text/javascript" src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+<body>
+
+    <div style="width:90%;height:auto;text-align:center;margin:0 auto" align="center">
+        <div style="width:90%;height:50px;"><p>使用版本号查询构建信息</p></div>
+        <div style="width:90%;height:50px;">
+            <a>版本号:</a>
+            <input id="myInput" name="build_version" style="width:400px;height:30px" type="text" value="请输入版本号" onfocus="javascript:if(this.value=='请输入版本号')this.value='';"  >
+
+            <input type="button" id="dosubmit" value="确认" style="width:100px;height:30px"><br>
+        </div><br>
+        <div id="myh">
+            <div id="mov">
+
+
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+var input = document.getElementById("myInput");
+input.addEventListener("keyup", function(event) {
+    event.preventDefault();
+    if (event.keyCode === 13) {
+        document.getElementById("dosubmit").click();
+    }
+});
+
+function ajx(dat, url, version){
+var version=version;
+$.ajax({
+                url:"{% url 'app02:datadb' %}",
+                data:dat,
+                type:"get",
+                traditional:true,
+                dataType:"json",
+                headers:{'X-CSRFToken':'{{ csrf_token }}'},
+                success:function (data) {
+                    if(data.data=="no"){
+                        $('#list').remove();
+                        $('#myh').append('<div id="list" style="width:70%;height:800px;text-align:center;margin:0 auto;"></div>');
+                        $('#list').append('<dl id="dll"></dl>');
+                        $('#dll').append('<h4>'+"版本号不存在. 注意：现已不再支持0.7版本以前的版本查询，如需查询请联系构建小助手。"+'</h3>');
+                    }else{
+                        $('#list').remove();
+                        $('#myh').append('<div id="list" style="width:70%;height:800px;text-align:center;margin:0 auto;"></div>');
+                        for(var dic in data){
+                            $('#list').append('<div id="'+dic+'" style="width:100%;text-align:center;margin:0 auto; border:1px dashed #00F;"></div>');
+                            $('#'+dic).append('<dl id="dll'+dic+'"></dl>');
+                            for(var key in data[dic]){
+                                if (key == "pipeline"){
+                                    $('#dll'+dic).append('<dd><a href="'+data[dic][key]+'" target="_blank">'+"流水线跳转"+'</a></dd>');
+                                }
+                                else{
+                                    if(key == "arges"){
+                                        $('#dll'+dic).append('<dd><a href="/build_arges?version='+version+'&page='+dic+'" target="_blank">'+"查看详细参数"+'</a></dd>');
+                                    }
+                                    else{
+                                            $('#dll'+dic).append('<dd>'+key+":"+'<font color="#FF0000">'+data[dic][key]+'</font></dd>');
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            })
+}
+//点击事件
+$(function(){
+    $('#dosubmit').click(function () {
+        var version = $("input[name='build_version']").val();
+        var dat = {
+            "version": version,
+        }
+        var url = "{% url 'app02:datadb' %}";
+        ajx(dat, url, version);
+    })
+});
+</script>
+</html>

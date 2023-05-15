@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>机器查询</title>
+</head>
+<body>
+<h2 align="center">机器使用情况总览</h2>
+<table id="list" border="1px" align="center" width="50%">
+    {% for i in data %}
+        <tr>
+            {% for s in i %}
+                {% if s == "已掉线" %}
+                <td align="center" bgcolor="red">{{ s }}</td>
+                {% elif s == "空闲" %}
+                <td align="center" bgcolor="green">{{ s }}</td>
+                {% else %}
+                <td>{{ s }}</td>
+                {% endif %}
+            {% endfor %}
+        </tr>
+    {% endfor %}
+</table>
+</body>
+</html>

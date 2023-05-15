@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+</head>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+<link rel="stylesheet" href="https://www.canvasxpress.org/dist/canvasXpress.css" type="text/css"/>
+<script type="text/javascript" src="https://www.canvasxpress.org/dist/canvasXpress.min.js"></script>
+<script type="text/javascript" src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+<body>
+    <a>time:</a>
+    <select name="time" id="time">
+        <option>recentday</option>
+        <option>recentweek</option>
+        <option>recentmonth</option>
+        <option>recentyear</option>
+    </select>
+    <a>data:</a>
+    <select name="data">
+        <option>duration</option>
+        <option>record</option>
+    </select>
+    <a>tag:</a>
+    <input name="tag" type="text" id="tag">
+    <a>type:</a>
+        <select name="type" >
+        <option>line</option>
+        <option>bar</option>
+    </select>
+    <input type="button" id="dosubmit" value="确认">
+    <div style="position:absolute; top:60px; left:10px; width:1500px; height:400px;">
+    <canvas id="myChart" width="1500px" height="400px"></canvas>
+    </div>
+</body>
+<script type="text/javascript">
+    function formatTime(number,format) {
+
+  var formateArr  = ['Y','M','D','h','m','s'];
+  var returnArr   = [];
+
+  var date = new Date(number * 1000);
+  returnArr.push(date.getFullYear());
+  returnArr.push(formatNumber(date.getMonth() + 1));
+  returnArr.push(formatNumber(date.getDate()));
+
+  returnArr.push(formatNumber(date.getHours()));
+  returnArr.push(formatNumber(date.getMinutes()));
+  returnArr.push(formatNumber(date.getSeconds()));
+
+  for (var i in returnArr)
+  {
+    format = format.replace(formateArr[i], returnArr[i]);
+  }
+  return format;
+}
+
+//数据转化
+function formatNumber(n) {
+  n = n.toString()
+  return n[1] ? n : '0' + n
+}
+    $(function () {
+        $('#dosubmit').click(function () {
+            var time = $('#time').find("option:selected").val();
+            var data = $('select[name="data"]').find("option:selected").val();
+            var tag = $("input[name='tag']").val();
+            var type = $('select[name="type"]').find("option:selected").val();
+            $.ajax({
+                url:"{% url 'app02:ret' %}",
+                data:{
+                    "time": time,
+                    "tag": tag,
+                    "data": data,
+                    "type": type,
+                },
+                type:"get",
+                traditional:true,
+                dataType:"json",
+                headers:{'X-CSRFToken':'{{ csrf_token }}'},
+                success:function (data) {
+                    //console.log(data)
+                    //data = JSON.parse(data);
+                    var x = eval(data.x);
+                    var y = eval(data.y);
+                    var types = data.type;
+                    var xs = [];
+                    for(var i = 0; i < x.length; i++){
+                        xs.push(formatTime(x[i],'Y/M/D-h:m:s'));//转换为日期：2017/03/03 03:03:03
+                    };
+var ctx = document.getElementById('myChart').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: ''+types,
+    data: {
+		//x
+        labels: xs,
+        datasets: [{
+            label: '数据可视化图表',
+			//y
+            data: y,
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1,
+            lineTension: 0
+        }]
+    },
+    options: {
+        scales: {
+            xAxes: [{
+                    LabelStyle:{Angle:90},
+                    scaleLabel: {
+                        display: true,
+                        labelString: '日期-时间'
+                    },
+
+                }],
+            yAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: '执行时间'
+                    },
+                ticks: {
+                    beginAtZero:true
+                }
+            }]
+        }
+    }
+
+});
+
+
+
+
+
+                }
+            })
+        })
+    });
+
+</script>
+</html>
