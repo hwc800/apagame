@@ -31,6 +31,7 @@ def new_select_arges(version):
     db = pymysql.connect("9.135.94.3", "root", "123456789", "version_num", port=3306, charset='utf8')
     cursor = db.cursor()
     need_key = ["pipeline","arges","version","tag","appversion","BuildClass","CommitId","build_mode","UpdaterChannelID","PufferChannelId","ASANENABLE",]
+    # 联合查询两个表，只获取上面的字段
     sql = f"select bb.pipeline,aa.arges,bb.version,bb.tag,bb.appversion,bb.BuildClass,bb.CommitId,bb.build_mode,bb.UpdaterChannelID," \
           f"bb.PufferChannelId,bb.ASANENABLE from (SELECT * FROM version_num.build_arges where version='%s') as aa, " \
           f"(SELECT * FROM version_num.build_version where version='%s') as bb where aa.pipeline=bb.pipeline;" % (version, version)

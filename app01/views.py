@@ -16,7 +16,7 @@ def ind(requests):
     return JsonResponse({"error": "fialed no file"})
 
 
-def zhuye(requests):
+def down_loads(requests):
     if requests.method == 'GET':
         path = 'static/'
         files = os.listdir(path)
@@ -62,6 +62,7 @@ def main(requests):
     return render(requests, 'main.html')
 
 
+# 提供的下载对应版本符号表接口
 def url(requests):
     """
             REFRESH_TOKEN = "OWlXdvWgLtpRan1QQZTcreUzoPEAxe"
@@ -87,6 +88,7 @@ def url(requests):
 
         import json
         pipline_id, build_id = None, None
+        # todo: 这里需要注意，token需要关注是否过期，项目id是否切换
         ACCESS_TOKEN = "83ueVqukO3Es3enAYqMVZjMrYYE1Lo"
         project_id = "afgame"
         if not results:
