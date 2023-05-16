@@ -48,9 +48,9 @@ def new_select_arges(version):
             branch = i["tag"]
             commit_list = commit.split("_")
             branch_list = branch.split("+")
-            i["engine_commit"] = commit_list[0]
-            i["client_commit"] = commit_list[1]
-            i["content_commit"] = commit_list[2]
+            i["engine_commit"] = commit_list[0] + "(SVN)"
+            i["client_commit"] = commit_list[1] + "(SVN)"
+            i["content_commit"] = commit_list[2] + "(P4)"
             i["engine_branch"] = branch_list[0]
             i["client_branch"] = branch_list[1]
             i["content_branch"] = branch_list[2]
