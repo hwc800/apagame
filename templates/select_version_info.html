@@ -93,7 +93,7 @@ $.ajax({
                 dataType:"json",
                 headers:{'X-CSRFToken':'{{ csrf_token }}'},
                 success:function (data) {
-                    if(data.code==1){
+                    if(data.code=="1"){
                         $('#list').remove();
                         $('#myh').append('<div id="list" style="width:70%;height:800px;text-align:center;margin:0 auto;"></div>');
                         $('#list').append('<dl id="dll"></dl>');
