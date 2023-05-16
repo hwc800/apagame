@@ -26,12 +26,12 @@ def version(requests):
         versions = version.split(".")
         datas = {}
         if not version or len(versions) != 4:
-            return JsonResponse({"code": 1, "msg": "版本异常或不存在"})
+            return JsonResponse({"code": 1, "msg": "版本号输入非法"})
         new_datas = new_database_select.new_select_arges(version)
         page = 0  # 用作版本号重复时，作为一个自增的key，用来区别同版本号的包并标记顺序
         if new_datas:
             for new_data in new_datas:
-                new_data["混淆开关"] =  "开启" if new_data["ASANENABLE"] == "True" else "关闭"
+                new_data["混淆开关"] = "开启" if new_data["ASANENABLE"] == "True" else "关闭"
                 new_data.pop("ASANENABLE")
                 datas[page] = new_data
                 page += 1
@@ -42,7 +42,6 @@ def version(requests):
                 "data_dict": datas
             }
             return JsonResponse(data)
-        print(222)
         return JsonResponse({"code": 1, "msg": "版本异常或不存在"})
 
 
@@ -54,7 +53,7 @@ def build_arges(requests):
 
         versions = version.split(".")
         if not version or len(versions) != 4:
-            return JsonResponse({"code": 1, "msg": "版本异常或不存在"})
+            return JsonResponse({"code": 1, "msg": "版本号输入非法"})
         new_datas = new_database_select.new_select_arges(version)
         if new_datas:
             datas = new_datas[page]["arges"]
