@@ -18,3 +18,6 @@ capture_output = True
 loglevel = 'info'
 errorlog = 'logs/gunicorn-error.log'
 # 启动命令 gunicorn -c ./myweb/gunicorn-config.py myweb.wsgi
+# 启动后，项目根路径下会生成一个logs目录，里面有gunicorn-error.log记录日志，gunicorn.pid记录进程id
+# 重启服务kill -HUP id
+# 关闭服务kill -9 id
