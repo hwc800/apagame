@@ -28,7 +28,6 @@ def version(requests):
         if not version or len(versions) != 4:
             return JsonResponse({"data": "no"})       
         new_datas = new_database_select.new_select_arges(version)
-        branch_commit = new_database_select.select_commit(version)
         page = 0  # 用作版本号重复时，作为一个自增的key，用来区别同版本号的包并标记顺序
         if new_datas:
             for new_data in new_datas:
