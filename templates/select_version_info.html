@@ -93,27 +93,28 @@ $.ajax({
                 dataType:"json",
                 headers:{'X-CSRFToken':'{{ csrf_token }}'},
                 success:function (data) {
-                    if(data.data=="no"){
+                    if(data.code==1){
                         $('#list').remove();
                         $('#myh').append('<div id="list" style="width:70%;height:800px;text-align:center;margin:0 auto;"></div>');
                         $('#list').append('<dl id="dll"></dl>');
-                        $('#dll').append('<h4>'+"版本号不存在. 注意：现已不再支持0.7版本以前的版本查询，如需查询请联系构建小助手。"+'</h3>');
+                        $('#dll').append('<h4>'+data.msg+'</h3>');
                     }else{
                         $('#list').remove();
                         $('#myh').append('<div id="list" style="width:70%;height:800px;text-align:center;margin:0 auto;"></div>');
-                        for(var dic in data){
+                        for(var dic in data.data_dict){
+
                             $('#list').append('<div id="'+dic+'" style="width:100%;text-align:center;margin:0 auto; border:1px dashed #00F;"></div>');
                             $('#'+dic).append('<dl id="dll'+dic+'"></dl>');
-                            for(var key in data[dic]){
+                            for(var key in data.data_dict[dic]){
                                 if (key == "pipeline"){
-                                    $('#dll'+dic).append('<dd><button value="转到流水线"><a href="'+data[dic][key]+'" target="_blank">'+"流水线跳转"+'</a></button></dd>');
+                                    $('#dll'+dic).append('<dd><button value="转到流水线"><a href="'+data.data_dict[dic][key]+'" target="_blank">'+"流水线跳转"+'</a></button></dd>');
                                 }
                                 else{
                                     if(key == "arges"){
                                         $('#dll'+dic).append('<dd><button value="查看详细参数"><a href="/build_arges?version='+version+'&page='+dic+'" target="_blank">'+"查看详细参数"+'</a></button></dd>');
                                     }
                                     else{
-                                            $('#dll'+dic).append('<dd>'+key+":"+'<font color="#FF0000">'+data[dic][key]+'</font></dd>');
+                                            $('#dll'+dic).append('<dd>'+key+":"+'<font color="#FF0000">'+data.data_dict[dic][key]+'</font></dd>');
                                     }
                                 }
                             }

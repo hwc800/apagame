@@ -26,24 +26,24 @@ def version(requests):
         versions = version.split(".")
         datas = {}
         if not version or len(versions) != 4:
-            return JsonResponse({"data": "no"})       
+            return JsonResponse({"data": "no"})
         new_datas = new_database_select.new_select_arges(version)
         page = 0  # 用作版本号重复时，作为一个自增的key，用来区别同版本号的包并标记顺序
         if new_datas:
             for new_data in new_datas:
-
-                if "ObscureAsset" in new_data["arges"].keys() and "OpenSymbolobfuscation" in new_data["arges"].keys():
-                    new_data["混淆开关"] = "关闭" if new_data["arges"]["ObscureAsset"] == "false" and new_data["arges"]["OpenSymbolobfuscation"] == "false" else "开启"
-                else:
-                    new_data["混淆开关"] = "关闭"
+                new_data["混淆开关"] =  "开启" if new_data["ASANENABLE"] == "True" else "关闭"
                 new_data.pop("ASANENABLE")
                 datas[page] = new_data
                 page += 1
 
-            dat = datas
-            return JsonResponse(dat)
+            data = {
+                "code": 0,
+                "msg": "数据正常",
+                "data_dict": datas
+            }
+            return JsonResponse(data)
 
-        return JsonResponse({"data": "no"})
+        return JsonResponse({"data": {"code": 1, "msg": "版本异常或不存在"}})
 
 
 def build_arges(requests):

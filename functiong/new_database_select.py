@@ -41,24 +41,40 @@ def new_select_arges(version):
     db.close()
 
     if select_result:
-        for i in select_result:
+        pass
+    else:
+        version = version.replace("\'", "")
+        version = version.replace("\"", "")
+        db = pymysql.connect("9.135.94.3", "root", "123456789", "version_num", port=3306, charset='utf8')
+        cursor = db.cursor()
+        need_key = ["pipeline", "version", "tag", "appversion", "BuildClass", "CommitId", "build_mode",
+                    "UpdaterChannelID", "PufferChannelId", "ASANENABLE", ]
+        sql = "select pipeline,version,tag,appversion,BuildClass,CommitId,build_mode,UpdaterChannelID,PufferChannelId,ASANENABLE from build_version where version=\"%s\";" % version
+        cursor.execute(sql)
+        slet = cursor.fetchall()
+        db.close()
+        select_result = select_new(cursor=cursor, slet=slet, sql=sql, f=need_key)
+        if not select_result:
+            select_result = {}
+
+    for i in select_result:
+        if "arges" in i:
             d = i["arges"]
             d = ast.literal_eval(d)
             i["arges"] = d
-            commit = i["CommitId"]
-            branch = i["tag"]
-            commit_list = commit.split("_")
-            branch_list = branch.split("+")
-            i["engine_commit"] = commit_list[0] + "(SVN)"
-            i["client_commit"] = commit_list[1] + "(SVN)"
-            i["content_commit"] = commit_list[2] + "(P4)"
-            i["engine_branch"] = branch_list[0]
-            i["client_branch"] = branch_list[1]
-            i["content_branch"] = branch_list[2]
-            i.pop("CommitId")
-            i.pop("tag")
-    else:
-        select_result = {}
+        commit = i["CommitId"]
+        branch = i["tag"]
+        commit_list = commit.split("_")
+        branch_list = branch.split("+")
+        i["engine_commit"] = commit_list[0] + "(SVN)"
+        i["client_commit"] = commit_list[1] + "(SVN)"
+        i["content_commit"] = commit_list[2] + "(P4)"
+        i["engine_branch"] = branch_list[0]
+        i["client_branch"] = branch_list[1]
+        i["content_branch"] = branch_list[2]
+        i.pop("CommitId")
+        i.pop("tag")
+
     return select_result
 
 
