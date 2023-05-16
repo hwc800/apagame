@@ -106,11 +106,11 @@ $.ajax({
                             $('#'+dic).append('<dl id="dll'+dic+'"></dl>');
                             for(var key in data[dic]){
                                 if (key == "pipeline"){
-                                    $('#dll'+dic).append('<dd><a href="'+data[dic][key]+'" target="_blank">'+"流水线跳转"+'</a></dd>');
+                                    $('#dll'+dic).append('<dd><button value="转到流水线"><a href="'+data[dic][key]+'" target="_blank">'+"流水线跳转"+'</a></button></dd>');
                                 }
                                 else{
                                     if(key == "arges"){
-                                        $('#dll'+dic).append('<dd><a href="/build_arges?version='+version+'&page='+dic+'" target="_blank">'+"查看详细参数"+'</a></dd>');
+                                        $('#dll'+dic).append('<dd><button value="查看详细参数"><a href="/build_arges?version='+version+'&page='+dic+'" target="_blank">'+"查看详细参数"+'</a></button></dd>');
                                     }
                                     else{
                                             $('#dll'+dic).append('<dd>'+key+":"+'<font color="#FF0000">'+data[dic][key]+'</font></dd>');
