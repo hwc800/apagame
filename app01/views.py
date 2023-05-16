@@ -23,7 +23,7 @@ def down_loads(requests):
         context = {
             'fielname': files,
         }
-        return render(requests, 'zhuye.html', context)
+        return render(requests, 'downloads.html', context)
 
 
 def download_template(request):
