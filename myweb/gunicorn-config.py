@@ -17,3 +17,4 @@ forwarded_allow_ips = '*'
 capture_output = True
 loglevel = 'info'
 errorlog = 'logs/gunicorn-error.log'
+# 启动命令 gunicorn -c ./myweb/gunicorn-config.py myweb.wsgi
