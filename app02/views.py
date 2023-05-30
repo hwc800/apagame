@@ -35,7 +35,6 @@ def version(requests):
                 new_data.pop("ASANENABLE")
                 datas[page] = new_data
                 page += 1
-            print(datas)
             data = {
                 "code": 0,
                 "msg": "数据正常",
