@@ -69,6 +69,8 @@ def new_select_arges(version):
         i["engine_commit"] = commit_list[0] + "(SVN)"
         i["client_commit"] = commit_list[1] + "(SVN)"
         i["content_commit"] = commit_list[2] + "(P4)"
+        if len(commit_list) == 4:
+            i["构建时间"] = commit_list[-1]
         i["engine_branch"] = branch_list[0]
         i["client_branch"] = branch_list[1]
         i["content_branch"] = branch_list[2]
