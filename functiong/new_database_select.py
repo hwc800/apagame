@@ -106,6 +106,8 @@ def select_commit(version):
         page["engine_commit"] = commit_list[0]
         page["client_commit"] = commit_list[1]
         page["content_commit"] = commit_list[2]
+        if len(commit_list) == 4:
+            i["构建时间"] = commit_list[-1]
         page["engine_branch"] = branch_list[0]
         page["client_branch"] = branch_list[1]
         page["content_branch"] = branch_list[2]
