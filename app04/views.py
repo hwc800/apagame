@@ -7,7 +7,6 @@ from app04.models import select_phone_info
 def select_machine(requests):
     if requests.method == 'GET':
         datas = select_phone_info()
-        print(type(datas), datas)
         if datas:
             return render(requests, 'newdb.html', {"data": datas})
         else:
