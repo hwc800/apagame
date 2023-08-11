@@ -40,6 +40,7 @@ INSTALLED_APPS = [  # 新增的app记得在这里添加
     'app01',
     'app02',
     'app03',
+    "app04",
 ]
 
 MIDDLEWARE = [

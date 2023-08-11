@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>手机信息查询</title>
+</head>
+<body>
+<h2 align="center">手机使用情况总览</h2>
+<table id="list" border="1px" align="center" width="70%" cellpadding="0px">
+        {% for i in data %}
+    <tr>
+        {% for s in i %}
+        {% if s == "失踪了" %}
+                <td align="center" bgcolor="red">{{ s }}</td>
+        {% else %}
+        <td align="center" width="10%">{{ s }}</td>
+        {% endif %}
+        {% endfor %}
+    </tr>
+        {% endfor %}
+</table>
+</body>
+</html>

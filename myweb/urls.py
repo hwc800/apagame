@@ -17,7 +17,7 @@ from django.urls import path, include
 from django.conf.urls import url
 from django.contrib import admin
 from django.urls import path
-import app01.urls, app02.urls, app03.urls
+import app01.urls, app02.urls, app03.urls, app04.urls
 
 
 urlpatterns = [
@@ -25,4 +25,5 @@ urlpatterns = [
     url(r'', include((app01.urls, 'ind'), namespace='ind')),
     url(r'', include((app02.urls, 'app02'), namespace='app02')),
     url(r'', include((app03.urls, 'app03'), namespace='app03')),
+    url(r'', include((app04.urls, 'app04'), namespace='app04')),
 ]
