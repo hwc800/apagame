@@ -11,6 +11,7 @@ def select_machine_info():
     sql = 'select * from web.machine_info;'
     cursor.execute(sql)
     results = cursor.fetchall()
+    # 添加行首，使得表格让人易懂
     datas = [["machine name", "Machine Status", "Machine Usage", "Last Usage Time", "10秒前cook数量", "当前cook数量"]]
     for i in results:
         datas.append(list(i[1:]))

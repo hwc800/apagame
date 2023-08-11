@@ -1,13 +1,6 @@
-import ast
-import json
-import pymysql as mysql
-import re, time
-from django.http import JsonResponse, HttpResponse
-from django.shortcuts import render
-from app02 import tests
 
-# Create your views here.
-from django.template import loader
+from django.http import JsonResponse
+from django.shortcuts import render
 
 from functiong import new_database_select
 

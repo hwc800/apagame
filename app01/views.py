@@ -11,12 +11,16 @@ from django.shortcuts import render
 from app01.models import select_machine_info
 from functiong.new_database_select import select_new_database
 
+"""
+项目组已未使用，可忽略
+"""
+
 
 def ind(requests):
     return JsonResponse({"error": "fialed no file"})
 
 
-def down_loads(requests):
+def down_loads(requests):  # 文件下载视图，如需使用此功能，本文件所有函数除最下面的url函数外都不能删除
     if requests.method == 'GET':
         path = 'static/'
         files = os.listdir(path)

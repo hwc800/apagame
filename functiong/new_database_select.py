@@ -93,9 +93,9 @@ def select_commit(version):
     if not select_result:
         return {}
 
-    # 可能查到多个相同版本号
+    # 可能查到多个相同版本号,每个版本号信息都使用自增的数字0-n来作对应的key，数据作value，组成二维的字典
     result = {}
-    p = 0
+    p = 0  # 自增的key
     for i in select_result:
         page = {}
 
@@ -103,11 +103,14 @@ def select_commit(version):
         branch = i["tag"]
         commit_list = commit.split("_")
         branch_list = branch.split("+")
+        # 这里处理提交号信息
         page["engine_commit"] = commit_list[0]
         page["client_commit"] = commit_list[1]
         page["content_commit"] = commit_list[2]
         if len(branch_list) == 4:
+            # 构建时间键值对处理
             i["构建时间"] = branch_list[-1]
+        # 这里处理分支信息
         page["engine_branch"] = branch_list[0]
         page["client_branch"] = branch_list[1]
         page["content_branch"] = branch_list[2]
@@ -116,11 +119,11 @@ def select_commit(version):
     p = 0
     for i in select_result:
         for key, value in i.items():
+            # 剔除不要的字段
             if key not in build_version_blank:
                 result[p][key] = value
         p += 1
     return result
 
 
-# 需要显示在查询界面的参数可在此列表中添加参数名
-ARGES_LIST = []
+
